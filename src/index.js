@@ -15,20 +15,33 @@ refs.searchForm.addEventListener('submit', event => {
     apiService.query = form.elements.query.value;
 
     refs.galleryList.innerHTML = '';
-    form.reset();
 
     apiService.resetPage();
 
-    apiService.fetchImages().then(hits => {
-        updateGalleryMarkup(hits);
-    });
+    fetchImages();
 
+    form.reset();
 });
 
-refs.loadMoreBtn.addEventListener('click', () => {
+refs.loadMoreBtn.addEventListener('click', fetchImages);
+
+function fetchImages() {
+    refs.loadMoreBtn.classList.add('is-hidden');
+    refs.loader.classList.remove('is-hidden');
+
+    refs.loadMoreBtn.disabled = true;
+
     apiService.fetchImages().then(hits => {
         updateGalleryMarkup(hits);
+        refs.loadMoreBtn.disabled = false;
+
+        window.scrollTo({
+            top: 10000,
+            behavior: 'smooth'
+        });
+
+        refs.loadMoreBtn.classList.remove('is-hidden');
+    }).finally(() => {
+        refs.loader.classList.add('is-hidden');
     });
-
-
-});
+};
