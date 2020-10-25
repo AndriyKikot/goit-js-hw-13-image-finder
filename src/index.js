@@ -2,46 +2,42 @@ import './styles.css';
 import './scss/normalize.scss';
 import 'material-design-icons/iconfont/material-icons.css';
 
-import apiService from './js/apiService.js';
 import updateGalleryMarkup from './js/updateGalleryMarkup';
 
 import { refs } from './js/refs.js';
+import apiService from './js/apiService.js';
+import loadMoreBtn from './js/loadMoreBtn.js';
 
 
-refs.searchForm.addEventListener('submit', event => {
+refs.searchForm.addEventListener('submit', searchFormSubmitHandler);
+refs.loadMoreBtn.addEventListener('click', fetchImages);
+
+function searchFormSubmitHandler(event) {
     event.preventDefault();
 
     const form = event.currentTarget;
     apiService.query = form.elements.query.value;
 
-    refs.galleryList.innerHTML = '';
-
+    clearGalleryList();
     apiService.resetPage();
-
     fetchImages();
-
     form.reset();
-});
-
-refs.loadMoreBtn.addEventListener('click', fetchImages);
-
+};
 function fetchImages() {
-    refs.loadMoreBtn.classList.add('is-hidden');
-    refs.loader.classList.remove('is-hidden');
 
-    refs.loadMoreBtn.disabled = true;
+    loadMoreBtn.disable();
 
     apiService.fetchImages().then(hits => {
         updateGalleryMarkup(hits);
-        refs.loadMoreBtn.disabled = false;
-
+        loadMoreBtn.show();
+        loadMoreBtn.enable();
         window.scrollTo({
             top: 10000,
             behavior: 'smooth'
         });
 
-        refs.loadMoreBtn.classList.remove('is-hidden');
-    }).finally(() => {
-        refs.loader.classList.add('is-hidden');
     });
+};
+function clearGalleryList() {
+    refs.galleryList.innerHTML = '';
 };
