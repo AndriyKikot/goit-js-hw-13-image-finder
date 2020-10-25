@@ -15,6 +15,9 @@ const loadMoreBtn = {
     show() {
         refs.loadMoreBtn.classList.remove('is-hidden');
     },
+    hide() {
+        refs.loadMoreBtn.classList.add('is-hidden');
+    },
 };
 
 export default loadMoreBtn;

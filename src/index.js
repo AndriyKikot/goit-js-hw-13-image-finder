@@ -7,6 +7,7 @@ import updateGalleryMarkup from './js/updateGalleryMarkup';
 import { refs } from './js/refs.js';
 import apiService from './js/apiService.js';
 import loadMoreBtn from './js/loadMoreBtn.js';
+import error from './js/pnotify.js'
 
 
 refs.searchForm.addEventListener('submit', searchFormSubmitHandler);
@@ -28,15 +29,19 @@ function fetchImages() {
     loadMoreBtn.disable();
 
     apiService.fetchImages().then(hits => {
-        updateGalleryMarkup(hits);
-        loadMoreBtn.show();
-        loadMoreBtn.enable();
-        window.scrollTo({
-            top: 10000,
-            behavior: 'smooth'
-        });
-
-    });
+        if (hits.length > 0) {
+            updateGalleryMarkup(hits);
+            loadMoreBtn.show();
+            loadMoreBtn.enable();
+            window.scrollTo({
+                top: 10000,
+                behavior: 'smooth'
+            });
+        } else {
+            error('Sorry. No results were found for your search!');
+            loadMoreBtn.hide();
+        }
+    }).catch(error => (console.log(error)));
 };
 function clearGalleryList() {
     refs.galleryList.innerHTML = '';
